@@ -10,6 +10,8 @@ import Foundation
 
 class Concentration {
     
+    var flipCount = 0
+    
     var cards = [Card]()
     
     var indexOfOneAndOnlyFaceUpCard: Int?
@@ -34,6 +36,7 @@ class Concentration {
                 indexOfOneAndOnlyFaceUpCard = index
             }
         }
+        flipCount += 1
     }
     
     init(numberOfPairsOfCards: Int) {
@@ -42,6 +45,20 @@ class Concentration {
             cards += [card, card]
         }
         
-        // TODO: Shuffle the cards
+        cards.shuffle()
+    }
+}
+
+extension MutableCollection {
+    /// Shuffle the elements of `self` in-place.
+    mutating func shuffle() {
+        // empty and single-element collections don't shuffle
+        if count < 2 { return }
+        
+        for i in indices.dropLast() {
+            let diff = distance(from: i, to: endIndex)
+            let j = index(i, offsetBy: numericCast(arc4random_uniform(numericCast(diff))))
+            swapAt(i, j)
+        }
     }
 }

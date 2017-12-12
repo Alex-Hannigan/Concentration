@@ -12,18 +12,15 @@ class ViewController: UIViewController {
     
     lazy var game = Concentration(numberOfPairsOfCards: (cardButtons.count + 1) / 2)
     
-    var flipCount = 0 {
+    @IBOutlet weak var flipCountLabel: UILabel! {
         didSet {
-            flipCountLabel.text = "Flips: \(flipCount)"
+            flipCountLabel.text = "Flips: 0"
         }
     }
-    
-    @IBOutlet weak var flipCountLabel: UILabel!
     
     @IBOutlet var cardButtons: [UIButton]!
     
     @IBAction func touchCard(_ sender: UIButton) {
-        flipCount += 1
         if let cardNumber = cardButtons.index(of: sender) {
             game.chooseCard(at: cardNumber)
             updateViewFromModel()
@@ -46,9 +43,25 @@ class ViewController: UIViewController {
                 button.backgroundColor = card.isMatched ? #colorLiteral(red: 1, green: 0.5763723254, blue: 0, alpha: 0) : #colorLiteral(red: 1, green: 0.5763723254, blue: 0, alpha: 1)
             }
         }
+        flipCountLabel.text = "Flips: \(game.flipCount)"
     }
     
-    var emojiChoices = ["🦇", "😱", "🙀", "😈", "🎃", "👻", "🍭", "🍬", "🍎"]
+    var christmasEmoji = ["🤶🏻", "🎅🏻", "🎄", "🍗", "🎁", "⛄️", "⭐️", "🍷", "🦌"]
+    
+    var emojiChoicesDict = [
+        1: ["🦇", "😱", "🙀", "😈", "🎃", "👻", "🍭", "🍬", "🍎"],
+        2: ["🤶🏻", "🎅🏻", "🎄", "🍗", "🎁", "⛄️", "⭐️", "🍷", "🦌"],
+        3: ["🐈", "🐑", "🐓", "🐖", "🦔", "🦍", "🐸", "🐎", "🐊"],
+        4: ["🙂", "🙁", "🤪", "😎", "🤯", "😡", "😭", "😬", "😲"],
+        5: ["🍓", "🥝", "🍉", "🍍", "🍌", "🍑", "🍇", "🍐", "🍋"],
+        6: ["🚗", "🏍", "🚆", "🚚", "🛩", "🚁", "⛵️", "🛴", "🚲"]
+        ]
+    
+    func randomEmojiSetIndex() -> Int {
+        return Int(arc4random_uniform(UInt32(emojiChoicesDict.count))) + 1
+    }
+    
+    lazy var emojiChoices = emojiChoicesDict[randomEmojiSetIndex()] ?? christmasEmoji
     
     var emoji = [Int:String]()
     
@@ -59,5 +72,13 @@ class ViewController: UIViewController {
         }
         return emoji[card.identifier] ?? "?"
     }
+    
+    @IBAction func touchNewGame(_ sender: UIButton) {
+        flipCountLabel.text = "Flips: 0"
+        game = Concentration(numberOfPairsOfCards: (cardButtons.count + 1) / 2)
+        emojiChoices = emojiChoicesDict[randomEmojiSetIndex()] ?? christmasEmoji
+        updateViewFromModel()
+    }
+    
 }
 
